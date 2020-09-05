@@ -19,13 +19,7 @@ pub type TBehaviourRunArgs<'a> = (
 );
 
 pub trait Behaviour {
-    fn run(
-        // item_type: &ItemType,
-        // items: &TItems,
-        // count_map: &TCountMap,
-        // majority_item_type: &Option<ItemType>,
-        (_item_type, _items, _count_map, _majority_item_type): &TBehaviourRunArgs,
-    ) -> i32 {
+    fn run((_item_type, _items, _count_map, _majority_item_type): &TBehaviourRunArgs) -> i32 {
         0
     }
 }
@@ -49,11 +43,7 @@ impl Behaviour for Loner {
 }
 
 pub struct Neutral;
-impl Behaviour for Neutral {
-    fn run((_item_type, _items, _count_map, _majority_item_type): &TBehaviourRunArgs) -> i32 {
-        0
-    }
-}
+impl Behaviour for Neutral {}
 
 pub struct Social;
 impl Behaviour for Social {
