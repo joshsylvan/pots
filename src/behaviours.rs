@@ -9,6 +9,8 @@ pub enum BehaviourTypes {
     Minority,
     Neutral,
     Social,
+    Test1,
+    Test2,
 }
 
 pub type TBehaviourRunArgs<'a> = (
@@ -75,6 +77,30 @@ impl Behaviour for Majority {
             if *item_type == majority {
                 return 1;
             }
+        }
+        -1
+    }
+}
+
+pub struct TestBehaviour1;
+impl Behaviour for TestBehaviour1 {
+    /// Checks if it is the only one of it's type
+    fn run((item_type, _items, count_map, _majority_item_type): &TBehaviourRunArgs) -> i32 {
+        let val = count_map.get(item_type).unwrap_or_else(|| &1u32);
+        if *val == 1 {
+            return 1;
+        }
+        -1
+    }
+}
+
+pub struct TestBehaviour2;
+impl Behaviour for TestBehaviour2 {
+    /// Checks if it is with any similar types
+    fn run((item_type, _items, count_map, _majority_item_type): &TBehaviourRunArgs) -> i32 {
+        let val = count_map.get(item_type).unwrap_or_else(|| &1u32);
+        if *val == 1 {
+            return 1;
         }
         -1
     }

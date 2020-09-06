@@ -5,14 +5,13 @@ use crate::item::{Item, ItemData, ItemType};
 
 const MAX_POT_SIZE: usize = 10;
 
-pub type TItems = [Option<Item>; MAX_POT_SIZE];
+pub type TItems = Vec<Item>;
 
 pub type TCountMap = HashMap<ItemType, u32>;
 
 pub struct Pot {
-    current_size: usize,
+    capacity: usize,
     items: TItems,
-    population: i32,
     majority_item_type: Option<ItemType>,
     score: i32,
     count_map: TCountMap,
@@ -21,38 +20,33 @@ pub struct Pot {
 impl Pot {
     pub fn new() -> Pot {
         Pot {
-            current_size: 0,
-            items: [None; MAX_POT_SIZE],
-            population: 0,
+            items: vec![],
             score: 0,
+            capacity: 10,
             majority_item_type: None,
             count_map: HashMap::new(),
         }
     }
 
     pub fn update(&mut self) {
-        let length = self.items.len();
         let mut pot_score: i32 = 0;
 
-        for index in 0..length {
-            if let Some(item_ref) = &self.items[index] {
-                let mut item = item_ref.clone();
-                let item_score = self.process_item_behaviours(item.get_item_data());
-                item.add_generation();
-                item.set_score(item_score);
-                pot_score += item_score;
-                self.items[index] = Some(item);
-            }
-        }
+        for index in 0..self.items.len() {
+            let mut item = self.items.get(index).unwrap().clone();
+            let item_score = self.process_item_behaviours(item.get_item_data());
 
-        self.score += pot_score;
+            item.add_generation();
+            item.set_score(item_score);
+            pot_score += item_score;
+
+            self.items[index] = item;
+        }
+        self.score = pot_score;
     }
 
     pub fn add(&mut self, item: Item) {
-        if self.current_size < self.items.len() - 1 {
-            self.items[self.current_size] = Some(item);
-            self.current_size += 1;
-            self.population += 1;
+        if self.items.len() < self.capacity - 1 {
+            self.items.push(item);
 
             self.count_map
                 .entry(item.get_type().clone())
@@ -94,22 +88,27 @@ impl Pot {
                     BehaviourTypes::Minority => behaviours::Minority::run(&args),
                     BehaviourTypes::Neutral => behaviours::Neutral::run(&args),
                     BehaviourTypes::Social => behaviours::Social::run(&args),
+                    BehaviourTypes::Test1 => behaviours::TestBehaviour1::run(&args),
+                    BehaviourTypes::Test2 => behaviours::TestBehaviour2::run(&args),
                 }
             }
         }
-
         new_score
     }
 
-    pub fn items(&self) -> &TItems {
+    pub fn get_items(&self) -> &TItems {
         &self.items
     }
 
-    pub fn score(&self) -> &i32 {
+    pub fn get_score(&self) -> &i32 {
         &self.score
     }
 
-    pub fn majority_item_type(&self) -> &Option<ItemType> {
+    pub fn get_count_map(&self) -> &TCountMap {
+        &self.count_map
+    }
+
+    pub fn get_majority_item_type(&self) -> &Option<ItemType> {
         &self.majority_item_type
     }
 }

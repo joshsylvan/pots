@@ -1,5 +1,6 @@
 use crate::behaviours::BehaviourTypes;
 use rand::{thread_rng, Rng};
+use std::fmt;
 
 const MAX_BEHAVIOUR_SIZE: usize = 3;
 
@@ -9,6 +10,14 @@ pub enum ItemType {
     Green,
     Blue,
     Yellow,
+    TestItem1,
+    TestItem2,
+}
+
+impl fmt::Display for ItemType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", &self)
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -22,21 +31,22 @@ pub struct Item {
 pub type ItemData = (ItemType, i32, [Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE]);
 
 impl Item {
-    pub fn _new(item_type: Option<ItemType>) -> Item {
-        if let Some(t) = item_type {
-            Item {
-                item_type: t,
-                score: 0,
-                generation: 0,
-                behaviours: Item::generate_behaviours(&t),
-            }
-        } else {
-            Item {
-                item_type: ItemType::Red,
-                score: 0,
-                generation: 0,
-                behaviours: [None; MAX_BEHAVIOUR_SIZE],
-            }
+    pub fn new(item_type: ItemType) -> Item {
+        Item {
+            item_type,
+            score: 0,
+            generation: 0,
+            behaviours: Item::generate_behaviours(&item_type),
+        }
+    }
+
+    pub fn new_random() -> Item {
+        let item_type = Item::get_random_type();
+        Item {
+            item_type,
+            score: 0,
+            generation: 0,
+            behaviours: Item::generate_behaviours(&item_type),
         }
     }
 
@@ -55,17 +65,6 @@ impl Item {
     pub fn get_behaviours(&self) -> &[Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE] {
         &self.behaviours
     }
-
-    pub fn new_random() -> Item {
-        let item_type = Item::get_random_type();
-        Item {
-            item_type,
-            score: 0,
-            generation: 0,
-            behaviours: Item::generate_behaviours(&item_type),
-        }
-    }
-
     pub fn add_generation(&mut self) {
         self.generation += 1;
     }
@@ -82,11 +81,7 @@ impl Item {
 
     fn generate_behaviours(item_type: &ItemType) -> [Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE] {
         match item_type {
-            ItemType::Red => [
-                Some(BehaviourTypes::Loner),
-                Some(BehaviourTypes::Minority),
-                None,
-            ],
+            ItemType::Red => [Some(BehaviourTypes::Loner), None, None],
             ItemType::Green => [
                 Some(BehaviourTypes::Social),
                 Some(BehaviourTypes::Majority),
@@ -94,6 +89,8 @@ impl Item {
             ],
             ItemType::Blue => [Some(BehaviourTypes::Neutral), None, None],
             ItemType::Yellow => [Some(BehaviourTypes::Happy), None, None],
+            ItemType::TestItem1 => [Some(BehaviourTypes::Loner), None, None],
+            ItemType::TestItem2 => [Some(BehaviourTypes::Social), None, None],
         }
     }
 

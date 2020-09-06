@@ -13,3 +13,12 @@ impl fmt::Debug for PotsError {
         write!(f, "{{ file: {}, line: {} }}", file!(), line!())
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct PotsInputError;
+
+impl fmt::Display for PotsInputError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Please input a valid index.")
+    }
+}
