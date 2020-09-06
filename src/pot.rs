@@ -3,8 +3,6 @@ use std::collections::hash_map::HashMap;
 use crate::behaviours::{self, Behaviour, BehaviourTypes};
 use crate::item::{Item, ItemData, ItemType};
 
-const MAX_POT_SIZE: usize = 10;
-
 pub type TItems = Vec<Item>;
 
 pub type TCountMap = HashMap<ItemType, u32>;

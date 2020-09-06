@@ -1,11 +1,9 @@
 use rand::{thread_rng, Rng};
 use std::io;
-use text_io::{read, scan};
 
 extern crate pots;
 use pots::errors::PotsInputError;
 use pots::item::Item;
-use pots::pot::Pot;
 use pots::pots::Pots;
 
 const _MAX_POTS: usize = 10;
