@@ -1,68 +1,8 @@
-use rand::{thread_rng, Rng};
 use std::io;
 
 extern crate pots;
 use pots::errors::PotsInputError;
-use pots::item::Item;
-use pots::pots::Pots;
-
-const _MAX_POTS: usize = 10;
-const MAX_NEW_ITEMS: u32 = 5;
-const MIN_NEW_ITEMS: u32 = 2;
-
-struct GameManager {
-    pots: Pots,
-    is_game_over: bool,
-    current_items: Vec<Item>,
-}
-
-impl GameManager {
-    fn new() -> GameManager {
-        GameManager {
-            pots: Pots::new(3),
-            is_game_over: true,
-            current_items: vec![],
-        }
-    }
-
-    fn start_game(&mut self) {
-        self.is_game_over = false;
-    }
-
-    fn next_turn(&mut self) {
-        let mut rng = thread_rng();
-        for _ in 0..rng.gen_range(MIN_NEW_ITEMS, MAX_NEW_ITEMS) {
-            self.current_items.push(Item::new_random());
-        }
-    }
-
-    fn pots(&self) -> &Pots {
-        &self.pots
-    }
-
-    fn pots_mut(&mut self) -> &mut Pots {
-        &mut self.pots
-    }
-
-    pub fn current_items(&self) -> &Vec<Item> {
-        &self.current_items
-    }
-
-    pub fn current_items_mut(&mut self) -> &mut Vec<Item> {
-        &mut self.current_items
-    }
-
-    pub fn display_current_items(&self) -> String {
-        let mut display = String::new();
-        let mut index = 0;
-        for item in &self.current_items {
-            display += &format!("({}){} ", index, item.get_type());
-            index += 1;
-        }
-
-        display
-    }
-}
+use pots::game_manager::GameManager;
 
 fn main() -> io::Result<()> {
     println!("Pots Game");
@@ -75,7 +15,7 @@ fn main() -> io::Result<()> {
         let selected_index;
         let selected_type;
         loop {
-            println!("{}", game.pots());
+            println!("{}", game.container());
             println!("Current items: {}", game.display_current_items());
             println!("Select and item...");
 
@@ -101,11 +41,11 @@ fn main() -> io::Result<()> {
         }
 
         loop {
-            println!("{}\n", game.pots());
+            println!("{}\n", game.container());
             println!("What pot do you want to place {} item?", selected_type);
 
             let selected_pot =
-                match get_valid_index(get_input()?.trim(), game.pots().get_pots().len()) {
+                match get_valid_index(get_input()?.trim(), game.container().get_pots().len()) {
                     Ok(i) => i,
                     Err(e) => {
                         print_and_clear(&e.to_string());
@@ -114,7 +54,7 @@ fn main() -> io::Result<()> {
                 };
 
             let item = game.current_items_mut().remove(selected_index);
-            game.pots_mut().add_item_to_pot(item, selected_pot);
+            game.container_mut().add_item_to_pot(item, selected_pot);
 
             print_and_clear(&format!(
                 "You placed {} in pot {}\n",
@@ -125,11 +65,11 @@ fn main() -> io::Result<()> {
 
         if game.current_items().len() == 0 {
             print_and_clear("Updating stats...");
-            game.pots_mut().update();
+            game.container_mut().update();
             println!("Next turn...");
             game.next_turn();
         } else {
-            println!("{}", game.pots());
+            println!("{}", game.container());
         }
     }
 }

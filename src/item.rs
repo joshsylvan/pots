@@ -1,8 +1,6 @@
-use crate::behaviours::BehaviourTypes;
+use crate::behaviours::{get_behaviours, BehaviourTypes, TBehaviours};
 use rand::{thread_rng, Rng};
 use std::fmt;
-
-const MAX_BEHAVIOUR_SIZE: usize = 3;
 
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub enum ItemType {
@@ -25,10 +23,10 @@ pub struct Item {
     item_type: ItemType,
     score: i32,
     generation: u32,
-    behaviours: [Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE],
+    behaviours: TBehaviours,
 }
 
-pub type ItemData = (ItemType, i32, [Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE]);
+pub type ItemData = (ItemType, i32, TBehaviours);
 
 impl Item {
     pub fn new(item_type: ItemType) -> Item {
@@ -36,7 +34,7 @@ impl Item {
             item_type,
             score: 0,
             generation: 0,
-            behaviours: Item::generate_behaviours(&item_type),
+            behaviours: get_behaviours(&item_type),
         }
     }
 
@@ -46,7 +44,7 @@ impl Item {
             item_type,
             score: 0,
             generation: 0,
-            behaviours: Item::generate_behaviours(&item_type),
+            behaviours: get_behaviours(&item_type),
         }
     }
 
@@ -62,7 +60,7 @@ impl Item {
         self.score = score;
     }
 
-    pub fn get_behaviours(&self) -> &[Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE] {
+    pub fn get_behaviours(&self) -> &TBehaviours {
         &self.behaviours
     }
     pub fn add_generation(&mut self) {
@@ -76,21 +74,6 @@ impl Item {
             1 => ItemType::Green,
             2 => ItemType::Blue,
             _ => ItemType::Yellow,
-        }
-    }
-
-    fn generate_behaviours(item_type: &ItemType) -> [Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE] {
-        match item_type {
-            ItemType::Red => [Some(BehaviourTypes::Loner), None, None],
-            ItemType::Green => [
-                Some(BehaviourTypes::Social),
-                Some(BehaviourTypes::Majority),
-                None,
-            ],
-            ItemType::Blue => [Some(BehaviourTypes::Neutral), None, None],
-            ItemType::Yellow => [Some(BehaviourTypes::Happy), None, None],
-            ItemType::TestItem1 => [Some(BehaviourTypes::Loner), None, None],
-            ItemType::TestItem2 => [Some(BehaviourTypes::Social), None, None],
         }
     }
 

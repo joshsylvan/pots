@@ -3,44 +3,44 @@ use std::fmt;
 use crate::item::Item;
 use crate::pot;
 
-pub struct Pots {
-    pots: Vec<pot::Pot>,
+pub struct Container {
+    container: Vec<pot::Pot>,
     global_score: i32,
 }
 
-impl Pots {
-    pub fn new(pot_count: u32) -> Pots {
-        let mut pots = vec![];
+impl Container {
+    pub fn new(pot_count: u32) -> Container {
+        let mut container = vec![];
 
         for _ in 0..pot_count {
-            pots.push(pot::Pot::new());
+            container.push(pot::Pot::new());
         }
 
-        Pots {
-            pots,
+        Container {
+            container,
             global_score: 0,
         }
     }
 
     fn _add_pot(&mut self, pot: pot::Pot) {
-        self.pots.push(pot);
+        self.container.push(pot);
     }
 
     pub fn add_new_pot(&mut self) {
-        self.pots.push(pot::Pot::new());
+        self.container.push(pot::Pot::new());
     }
 
     pub fn get_pots(&self) -> &Vec<pot::Pot> {
-        &self.pots
+        &self.container
     }
 
     pub fn add_item_to_pot(&mut self, item: Item, pot_index: usize) {
-        self.pots.get_mut(pot_index).unwrap().add(item);
+        self.container.get_mut(pot_index).unwrap().add(item);
     }
 
     pub fn update(&mut self) {
         self.global_score = 0;
-        for pot in &mut self.pots {
+        for pot in &mut self.container {
             pot.update();
             self.global_score += pot.get_score();
         }
@@ -51,11 +51,11 @@ impl Pots {
     }
 }
 
-impl fmt::Display for Pots {
+impl fmt::Display for Container {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut output = format!("Current score: {}\n\n", self.global_score);
         let mut index: u32 = 0;
-        for pot in &self.pots {
+        for pot in &self.container {
             output += &format!("Pot {}: ", index);
 
             for item in pot.get_items() {

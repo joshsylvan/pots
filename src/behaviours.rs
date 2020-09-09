@@ -1,6 +1,8 @@
 use crate::item::ItemType;
 use crate::pot::{TCountMap, TItems};
 
+const MAX_BEHAVIOUR_SIZE: usize = 3;
+
 #[derive(Copy, Clone)]
 pub enum BehaviourTypes {
     Happy,
@@ -11,6 +13,23 @@ pub enum BehaviourTypes {
     Social,
     Test1,
     Test2,
+}
+
+pub type TBehaviours = [Option<BehaviourTypes>; MAX_BEHAVIOUR_SIZE];
+
+pub fn get_behaviours(item_type: &ItemType) -> TBehaviours {
+    match item_type {
+        ItemType::Red => [Some(BehaviourTypes::Loner), None, None],
+        ItemType::Green => [
+            Some(BehaviourTypes::Social),
+            Some(BehaviourTypes::Majority),
+            None,
+        ],
+        ItemType::Blue => [Some(BehaviourTypes::Neutral), None, None],
+        ItemType::Yellow => [Some(BehaviourTypes::Happy), None, None],
+        ItemType::TestItem1 => [Some(BehaviourTypes::Loner), None, None],
+        ItemType::TestItem2 => [Some(BehaviourTypes::Social), None, None],
+    }
 }
 
 pub type TBehaviourRunArgs<'a> = (
